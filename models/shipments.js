@@ -4,19 +4,22 @@
 module.exports = (mongoose, Mongoose) => {
   // This section contains the properties of your model, mapped to your collection's properties.
   // Learn more here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/models/enrich-your-models#declaring-a-new-field-in-a-model
-  const schema = Mongoose.Schema({
-    'to': String,
-    'labelURL': String,
-    'shipping_carrier': String,
-    'tracking_url': String,
-    'zip': String,
-    'tracking_number': String,
-    'shipping_method': String,
-    'date': String,
-    'cost': String,
-  }, {
-    timestamps: false,
-  });
+  const schema = Mongoose.Schema(
+    {
+      to: String,
+      labelURL: String,
+      shipping_carrier: String,
+      tracking_url: String,
+      zip: String,
+      tracking_number: String,
+      shipping_method: String,
+      date: String,
+      cost: String,
+    },
+    {
+      timestamps: false,
+    }
+  );
 
-  return mongoose.model('shipments', schema, 'shipments');
+  return mongoose.model("shipments", schema, "shipments");
 };

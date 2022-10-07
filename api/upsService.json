@@ -1,0 +1,47 @@
+[
+  {
+    "carrierCode": "ups_walleted",
+    "shippingCarrier": "UPS",
+    "code": "ups_ground",
+    "name": "UPS Ground",
+    "alias": "ground",
+    "domestic": true,
+    "international": false
+  },
+  {
+    "carrierCode": "ups_walleted",
+    "shippingCarrier": "UPS",
+    "code": "ups_2nd_day_air",
+    "name": "UPS 2nd Day Air®",
+    "alias": "2nddayair",
+    "domestic": true,
+    "international": false
+  },
+  {
+    "carrierCode": "ups_walleted",
+    "shippingCarrier": "UPS",
+    "code": "ups_next_day_air_saver",
+    "name": "UPS Next Day Air Saver®",
+    "alias": "nextdayairsaver",
+    "domestic": true,
+    "international": false
+  },
+  {
+    "carrierCode": "ups_walleted",
+    "shippingCarrier": "UPS",
+    "code": "ups_worldwide_expedited",
+    "name": "UPS Worldwide Expedited®",
+    "alias": "wwexpedited",
+    "domestic": false,
+    "international": true
+  },
+  {
+    "carrierCode": "dhl_express_worldwide",
+    "shippingCarrier": "DHL",
+    "code": "dhl_express_worldwide",
+    "name": "DHL Express Worldwide",
+    "alias": "dhlxpressww",
+    "domestic": false,
+    "international": true
+  }
+]

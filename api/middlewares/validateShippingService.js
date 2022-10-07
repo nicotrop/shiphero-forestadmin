@@ -1,0 +1,115 @@
+const upsService = require("../upsService.json");
+
+const validateShippingService = (req, res, next) => {
+  const { alias } = req.params;
+  const { packages, to_address } = req.body;
+
+  //Look up service details
+  const serviceDetails = upsService.find((ups) => ups.alias === alias);
+  req.serviceDetails = serviceDetails;
+
+  //Check if county is available for shipping service
+  if (serviceDetails) {
+    //Check if county is available for shipping service
+    if (serviceDetails.international === false && to_address.country !== "US") {
+      console.log("This service is not available for international shipments");
+      res.status(400).json({
+        error: "This service is not available for international shipments",
+      });
+    } else if (
+      serviceDetails.domestic === false &&
+      to_address.country === "US"
+    ) {
+      console.log("This service is not available for domestic shipments");
+      res.status(400).json({
+        error: "This service is not available for domestic shipments",
+      });
+    } else if (serviceDetails.shippingCarrier !== "UPS") {
+      //Loop through packages to sum up weight and dimensions
+      const weight = packages
+        .map((elem) => elem.weight_in_oz)
+        .reduce((a, b) => a + b);
+      const width = packages.map((elem) => elem.width).reduce((a, b) => a + b);
+      const length = packages
+        .map((elem) => elem.length)
+        .reduce((a, b) => a + b);
+      const height = packages
+        .map((elem) => elem.height)
+        .reduce((a, b) => a + b);
+
+      //Sum value to insure with Shipsurance
+      const customsValue = [];
+      packages.forEach((element) => {
+        element.line_items.forEach((item) => {
+          customsValue.push(Number(item.customs_value));
+        });
+      });
+
+      const value = customsValue.reduce((a, b) => a + b);
+
+      const packageInput = {
+        weight: { value: weight, unit: "ounces" },
+        insured_value: { currency: "usd", amount: value },
+        dimensions: { height, width, length, units: "inches" },
+      };
+      req.packageDetails = packageInput;
+
+      //Create customsItems array for International shipments
+      const customsItemsArr = [];
+      packages.map((elem) => {
+        return elem.line_items.map((item) => {
+          if (item.ignore_on_customs !== true) {
+            return customsItemsArr.push({
+              customsItemId: item.line_item_id,
+              description: item.customs_description,
+              quantity: Number(item.quantity),
+              value: Number(item.customs_value),
+              harmonizedTariffCode: item.tariff_code,
+              countryOfOrigin: item.country_of_manufacture || "US",
+            });
+          }
+        });
+      });
+
+      req.shipstationCustoms = [...customsItemsArr];
+
+      console.log("Shipping service validated");
+      next();
+    } else {
+      //Create packages array
+      const packageInput = packages.map((elem) => {
+        return {
+          weight: {
+            value: elem.weight_in_oz,
+            unit: "ounce",
+          },
+          insured_value: {
+            currency: "usd",
+            amount: elem.line_items.reduce(
+              (sum, value) => sum + Number(value.customs_value),
+              0
+            ),
+          },
+          dimensions: {
+            height: elem.height,
+            width: elem.width,
+            length: elem.length,
+            unit: "inch",
+          },
+        };
+      });
+
+      req.packageDetails = packageInput;
+
+      console.log("Shipping service validated");
+      next();
+    }
+  } else {
+    console.log("Invalid shipping service");
+    res.status(400).json({
+      message: "Invalid shipping service",
+    });
+  }
+};
+
+module.exports = validateShippingService;

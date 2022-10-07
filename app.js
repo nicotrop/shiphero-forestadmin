@@ -52,6 +52,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+//Import route custom
+const createLabel = require("./api/routes/createLabel");
+app.use(createLabel);
+const testRoutes = require("./api/routes/testRoutes");
+app.use(testRoutes);
+const shipstationCarriers = require("./api/routes/shipstationCarriers");
+app.use(shipstationCarriers);
+const getTrackingURL = require("./api/routes/getTrackingURL");
+app.use(getTrackingURL);
+
 app.use(
   jwt({
     secret: process.env.FOREST_AUTH_SECRET,
