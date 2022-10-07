@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 require("dotenv").config();
-const upsList = require("../upsService.json");
+const upsList = require("../upsService");
 
 //Set up Auth0
 const getAuth = require("../utils/getAuth");

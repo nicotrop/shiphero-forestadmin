@@ -10,6 +10,7 @@ module.exports = (mongoose, Mongoose) => {
       store_name: String,
       shipping_carrier: String,
       shipping_method: String,
+      shipment_labelURL: String,
       apiService: String,
       cost: String,
       to_address: String,

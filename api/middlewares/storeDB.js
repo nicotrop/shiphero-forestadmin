@@ -1,6 +1,6 @@
 //Import model
 const { format } = require("date-fns");
-const { SecondShipments } = require("../../models/SecondShipments");
+const { secondshipments } = require("../../models");
 const cloudinary = require("cloudinary").v2;
 
 const storeDB = async (req, res, next) => {
@@ -31,7 +31,7 @@ const storeDB = async (req, res, next) => {
 
   //Store in database
   try {
-    const newShipment = new SecondShipments({
+    const newShipment = new secondshipments({
       order_number: req.body.order_number,
       store_name: req.body.shop_name,
       shipping_carrier: serviceDetails.shippingCarrier,
@@ -46,6 +46,7 @@ const storeDB = async (req, res, next) => {
     //Conditional if DHL or UPS
     if (serviceDetails.shippingCarrier === "DHL") {
       newShipment.shipment_type = "single-package";
+      newShipment.shipment_labelURL = labelURL;
       newShipment.apiService = "shipstation";
       newShipment.packages = [
         {
@@ -60,6 +61,7 @@ const storeDB = async (req, res, next) => {
       newShipment.shipment_type =
         data.packages.length > 1 ? "multi-packages" : "single-package";
       newShipment.apiService = "shipengine";
+      newShipment.shipment_labelURL = data.label_download.pdf;
       newShipment.packages = data.packages.map((elem, index) => {
         return {
           name: `Package ${index + 1}`,

@@ -7,7 +7,7 @@ const { format } = require("date-fns");
 const cloudinary = require("cloudinary").v2;
 
 //Import models
-const { shipments: Shipments } = require("../../models/shipments");
+const { shipments: Shipments } = require("../../models");
 
 //Configurer cloudinary
 cloudinary.config({

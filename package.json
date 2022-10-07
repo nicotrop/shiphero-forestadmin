@@ -6,6 +6,7 @@
     "start": "node ./server.js"
   },
   "dependencies": {
+    "agent-base": "^6.0.2",
     "axios": "^1.1.2",
     "body-parser": "1.19.0",
     "chalk": "~1.1.3",
