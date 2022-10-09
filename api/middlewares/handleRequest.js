@@ -38,7 +38,6 @@ const handleRequest = async (req, res, next) => {
       );
       data = ShipstationRes;
     }
-
     //Save one object for all the scenarios
     req.labelData = data;
     console.log("Succesful request to service provider");

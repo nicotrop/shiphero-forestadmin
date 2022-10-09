@@ -10,10 +10,16 @@ const storeDB = async (req, res, next) => {
 
   let labelURL;
 
-  //TODO if statement if DHl or UPS create PDF with cloudinary
+  //If DHL (shipstation) create PDF with cloudinary
   if (serviceDetails.shippingCarrier === "DHL") {
     //Format month for cloudinary
     const month = format(new Date(), "MMM-yyyy");
+    //Configurer cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUD_name,
+      api_key: process.env.API_key,
+      api_secret: process.env.API_secret,
+    });
 
     //Store label in cloudinary
     const PDFupload = await cloudinary.uploader.upload(
@@ -32,11 +38,11 @@ const storeDB = async (req, res, next) => {
   //Store in database
   try {
     const newShipment = new secondshipments({
+      label_status: "Created",
       order_number: req.body.order_number,
       store_name: req.body.shop_name,
       shipping_carrier: serviceDetails.shippingCarrier,
       shipping_method: serviceDetails.name,
-      label_id: data?.label_id || "n/a",
       tracking_number: data?.tracking_number || data.trackingNumber,
       cost: data?.shipment_cost?.amount || data?.shipmentCost,
       to_address: `${verifiedAddress.city_locality}, ${verifiedAddress.country_code}`,
@@ -48,6 +54,7 @@ const storeDB = async (req, res, next) => {
       newShipment.shipment_type = "single-package";
       newShipment.shipment_labelURL = labelURL;
       newShipment.apiService = "shipstation";
+      newShipment.label_id = data.shipmentId;
       newShipment.packages = [
         {
           name: `Package 1`,
@@ -61,6 +68,7 @@ const storeDB = async (req, res, next) => {
       newShipment.shipment_type =
         data.packages.length > 1 ? "multi-packages" : "single-package";
       newShipment.apiService = "shipengine";
+      newShipment.label_id = data.label_id;
       newShipment.shipment_labelURL = data.label_download.pdf;
       newShipment.packages = data.packages.map((elem, index) => {
         return {

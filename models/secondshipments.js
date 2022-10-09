@@ -12,6 +12,7 @@ module.exports = (mongoose, Mongoose) => {
       shipping_method: String,
       shipment_labelURL: String,
       apiService: String,
+      label_status: String,
       cost: String,
       to_address: String,
       zip: String,

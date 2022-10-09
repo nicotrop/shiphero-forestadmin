@@ -8,6 +8,7 @@ const cloudinary = require("cloudinary").v2;
 
 //Import models
 const { shipments: Shipments } = require("../../models");
+const { secondshipments } = require("../../models");
 
 //Configurer cloudinary
 cloudinary.config({
@@ -100,6 +101,7 @@ router.post("/shipenginecarrierse", async (req, res) => {
         headers: {
           Host: "api.shipengine.com",
           "API-Key": process.env.SHIPENGINE_API_KEY,
+          "Content-Type": "application/json",
         },
       }
     );
@@ -254,6 +256,53 @@ router.post("/voidlabel", async (req, res) => {
     res.status(400).json({
       error: error,
     });
+  }
+});
+
+router.post("/void-test", async (req, res) => {
+  const { shipmentID } = req.body;
+
+  let shipment = await secondshipments.findById(shipmentID);
+
+  console.log(process.env.SHIPENGINE_API_KEY);
+
+  let response;
+  //Void Shipment
+  try {
+    if (shipment.apiService == "shipengine") {
+      const { data } = await axios.post(
+        `https://api.shipengine.com/v1/labels/${shipment.label_id}/void`,
+        {
+          headers: {
+            Host: "api.shipengine.com",
+            "API-Key": process.env.SHIPENGINE_API_KEY,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      response = data;
+    } else if (shipment.apiService == "shipstation") {
+      const { data } = await axios.post(
+        `https://ssapi.shipstation.com/shipments/voidlabel`,
+        JSON.stringify({
+          shipmentId: shipment.label_id,
+        }),
+        {
+          headers: {
+            Host: "ssapi.shipstation.com",
+            Authorization: auth,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      response = data;
+    }
+    console.log(response);
+    shipment.label_status = "Voided";
+    await shipment.save();
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(400).json({ error: error });
   }
 });
 

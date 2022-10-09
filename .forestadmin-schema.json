@@ -85,6 +85,21 @@
       "inverseOf": null,
       "validations": []
     }, {
+      "field": "label_status",
+      "type": "String",
+      "defaultValue": null,
+      "enums": null,
+      "integration": null,
+      "isFilterable": true,
+      "isPrimaryKey": false,
+      "isReadOnly": false,
+      "isRequired": false,
+      "isSortable": true,
+      "isVirtual": false,
+      "reference": null,
+      "inverseOf": null,
+      "validations": []
+    }, {
       "field": "order_number",
       "type": "String",
       "defaultValue": null,
@@ -251,7 +266,20 @@
       "validations": []
     }],
     "segments": [],
-    "actions": []
+    "actions": [{
+      "name": "Void Shipment",
+      "type": "bulk",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/void-shipment",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": [],
+      "hooks": {
+        "load": false,
+        "change": []
+      }
+    }]
   }, {
     "name": "shipments",
     "nameOld": "shipments",

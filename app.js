@@ -55,8 +55,8 @@ app.use(express.static(path.join(__dirname, "public")));
 //Import route custom
 const createLabel = require("./api/routes/createLabel");
 app.use(createLabel);
-// const testRoutes = require("./api/routes/testRoutes");
-// app.use(testRoutes);
+const testRoutes = require("./api/routes/testRoutes");
+app.use(testRoutes);
 const shipstationCarriers = require("./api/routes/shipstationCarriers");
 app.use(shipstationCarriers);
 const getTrackingURL = require("./api/routes/getTrackingURL");
