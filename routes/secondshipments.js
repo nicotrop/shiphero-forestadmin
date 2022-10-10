@@ -28,18 +28,20 @@ router.post(
     //Void Shipment
     try {
       if (shipment.apiService == "shipengine") {
-        const res = await axios.put(
+        const { data } = await axios.put(
           `https://api.shipengine.com/v1/labels/${shipment.label_id}/void`,
+          {},
           {
             headers: {
               Host: "api.shipengine.com",
               "API-Key": process.env.SHIPENGINE_API_KEY,
+              "Content-Type": "application/json",
             },
           }
         );
-        response = res;
+        response = data;
       } else if (shipment.apiService == "shipstation") {
-        const res = await axios.post(
+        const { data } = await axios.post(
           `https://ssapi.shipstation.com/shipments/voidlabel`,
           JSON.stringify({
             shipmentId: shipment.label_id,
@@ -52,19 +54,11 @@ router.post(
             },
           }
         );
-        response = res;
+        response = data;
       }
-      console.log(response);
       shipment.label_status = "Voided";
       await shipment.save();
-      res.send({
-        html: `
-        <strong class="c-form__label--read c-clr-1-2"> Response message </strong>
-        <p class="c-clr-1-4 l-mt l-mb">\$${response.message}</p>
-        <strong class="c-form__label--read c-clr-1-2">Approved</strong>
-        <p class="c-clr-1-4 l-mb">**** **** **** ${response.approved}</p>
-        `,
-      });
+      res.send({ success: response.message });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

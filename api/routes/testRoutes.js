@@ -240,15 +240,16 @@ router.post(
 
 router.post("/voidlabel", async (req, res) => {
   const { labelID } = req.body;
+  const headers = {
+    Host: "api.shipengine.com",
+    "API-Key": process.env.SHIPENGINE_API_KEY,
+    "Content-Type": "application/json",
+  };
   try {
     const { data } = await axios.put(
       `https://api.shipengine.com/v1/labels/${labelID}/void`,
       {
-        headers: {
-          Host: "api.shipengine.com",
-          "API-Key": process.env.SHIPENGINE_API_KEY,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
     res.status(200).json(data);
@@ -265,20 +266,20 @@ router.post("/void-test", async (req, res) => {
   let shipment = await secondshipments.findById(shipmentID);
 
   console.log(process.env.SHIPENGINE_API_KEY);
+  const headers = {
+    Host: "api.shipengine.com",
+    "API-Key": process.env.SHIPENGINE_API_KEY,
+    "Content-Type": "application/json",
+  };
 
   let response;
   //Void Shipment
   try {
     if (shipment.apiService == "shipengine") {
-      const { data } = await axios.post(
+      const { data } = await axios.put(
         `https://api.shipengine.com/v1/labels/${shipment.label_id}/void`,
-        {
-          headers: {
-            Host: "api.shipengine.com",
-            "API-Key": process.env.SHIPENGINE_API_KEY,
-            "Content-Type": "application/json",
-          },
-        }
+        {},
+        { headers }
       );
       response = data;
     } else if (shipment.apiService == "shipstation") {
@@ -300,7 +301,7 @@ router.post("/void-test", async (req, res) => {
     console.log(response);
     shipment.label_status = "Voided";
     await shipment.save();
-    res.status(200).json(response);
+    res.status(200).json(response.message);
   } catch (error) {
     res.status(400).json({ error: error });
   }
