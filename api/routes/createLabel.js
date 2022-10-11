@@ -15,7 +15,7 @@ const responseObject = require("../middlewares/responseObject");
 
 router.post(
   "/webhooks/print-label/:alias",
-  // validateWebhook,
+  validateWebhook,
   checkPackageInput,
   validateAddress,
   validateShippingService,
