@@ -23,7 +23,7 @@ router.post(
     let shipmentID = req.body.data.attributes.ids[0];
     let shipment = await secondshipments.findById(shipmentID);
     console.log(shipment.label_id);
-    console.log(process.env.SHIPENGINE_API_KEY);
+    // console.log(process.env.SHIPENGINE_API_KEY);
     let response;
     //Void Shipment
     try {

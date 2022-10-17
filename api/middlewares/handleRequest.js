@@ -9,7 +9,7 @@ const handleRequest = async (req, res, next) => {
 
   let data;
   try {
-    //TODO if statement if DHl or UPS
+    //If carrier is UPS
     if (serviceDetails.shippingCarrier === "UPS") {
       //Make request to ShipEngine
       const { data: shipEngineRes } = await axios.post(
@@ -24,6 +24,7 @@ const handleRequest = async (req, res, next) => {
         }
       );
       data = shipEngineRes;
+      //If carrier is DHL
     } else if (serviceDetails.shippingCarrier === "DHL") {
       const { data: ShipstationRes } = await axios.post(
         "https://ssapi.shipstation.com/shipments/createlabel",
