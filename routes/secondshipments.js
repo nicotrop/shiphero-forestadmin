@@ -99,7 +99,7 @@ router.post(
           config
         );
 
-        console.log(data);
+        // console.log(data);
 
         const finalArr = data.labels.map((elem) => {
           return {

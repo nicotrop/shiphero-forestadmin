@@ -19,14 +19,14 @@ router.post(
   checkPackageInput,
   validateAddress,
   validateShippingService,
-  // requestPrep,
-  // handleRequest,
-  // storeDB,
-  // responseObject,
+  requestPrep,
+  handleRequest,
+  storeDB,
+  responseObject,
   async (req, res) => {
-    // const webhookResponse = req.webhookResponse;
-    // res.status(200).json(webhookResponse);
-    res.status(200).json({ message: "Webhook received" });
+    const webhookResponse = req.webhookResponse;
+    res.status(200).json(webhookResponse);
+    // res.status(200).json({ message: "Webhook received" });
   }
 );
 

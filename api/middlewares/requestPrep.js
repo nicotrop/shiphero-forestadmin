@@ -31,7 +31,7 @@ const requestPrep = async (req, res, next) => {
               : "no",
         },
         ship_from: {
-          name: "ecomspaces fulifllment",
+          name: from_address.name,
           company_name: from_address.company_name,
           phone: from_address.phone,
           address_line1: from_address.address_1,
@@ -61,7 +61,7 @@ const requestPrep = async (req, res, next) => {
       },
       dimensions: packageDetails.dimensions,
       shipFrom: {
-        name: "ecomspaces fulfillment",
+        name: from_address.name,
         company: from_address.company_name,
         street1: from_address.address_1,
         street2: from_address.address_2,
