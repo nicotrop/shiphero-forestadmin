@@ -9,6 +9,7 @@ const cloudinary = require("cloudinary").v2;
 //Import models
 const { shipments: Shipments } = require("../../models");
 const { secondshipments } = require("../../models");
+const { carrierServices } = require("../../models");
 
 //Configurer cloudinary
 cloudinary.config({
@@ -26,6 +27,7 @@ const handleRequest = require("../middlewares/handleRequest");
 const responseObject = require("../middlewares/responseObject");
 const storeDB = require("../middlewares/storeDB");
 const validateShippingService = require("../middlewares/validateShippingService");
+const upsServices = require("../upsService.json");
 const auth = getAuth();
 
 //Set date format
@@ -76,6 +78,12 @@ router.post("/cloudinarytest", async (req, res) => {
   res.status(200).json(PDFupload);
 });
 
+router.post("/findAlias", async (req, res) => {
+  const alias = req.query.alias;
+  const findAlias = await carrierServices.findOne({ alias: alias });
+  res.status(200).json(findAlias);
+});
+
 router.post("/shipenginecarriers", async (req, res) => {
   try {
     const response = await axios.get(`https://api.shipengine.com/v1/carriers`, {
@@ -85,7 +93,39 @@ router.post("/shipenginecarriers", async (req, res) => {
         "Content-Type": "application/json",
       },
     });
-    res.status(200).json(response.data);
+
+    const data = { ...response.data };
+
+    let dbEntries;
+
+    data.carriers.forEach(async (carrier) => {
+      carrier.services.forEach(async (service) => {
+        if (upsServices.find((elem) => elem.code === service.service_code)) {
+          const newEntry = new carrierServices({
+            carrier_id: service.carrier_id,
+            carrier_name: carrier.friendly_name,
+            shipengine_carrier_code: service.carrier_code,
+            shipstation_carrier_code: upsServices.find(
+              (elem) => elem.code === service.service_code
+            ).carrierCode,
+            service_code: service.service_code,
+            alias: upsServices.find(
+              (elem) => elem.code === service.service_code
+            ).alias,
+            name: service.name,
+            domestic: service.domestic,
+            international: service.international,
+            is_multi_package_supported: service.is_multi_package_supported,
+          });
+          await newEntry.save();
+        }
+      });
+      return dbEntries;
+    });
+
+    dbEntries = await carrierServices.find();
+
+    res.status(200).json(dbEntries);
   } catch (error) {
     res.status(400).json({
       error: error,
@@ -96,7 +136,7 @@ router.post("/shipenginecarriers", async (req, res) => {
 router.post("/shipenginecarrierse", async (req, res) => {
   try {
     const response = await axios.get(
-      `https://api.shipengine.com/v1/carriers/se-3172942`,
+      `https://api.shipengine.com/v1/carriers/se-3221679`,
       {
         headers: {
           Host: "api.shipengine.com",
@@ -222,21 +262,21 @@ router.post("/comparerates", async (req, res) => {
   }
 });
 
-router.post(
-  "/shipengineLabel/:alias",
-  // validateWebhook,
-  checkPackageInput,
-  validateAddress,
-  validateShippingService,
-  requestPrep,
-  handleRequest,
-  storeDB,
-  responseObject,
-  async (req, res) => {
-    const webhookResponse = req.webhookResponse;
-    res.status(200).json(webhookResponse);
-  }
-);
+// router.post(
+//   "/shipengineLabel/:alias",
+//   // validateWebhook,
+//   checkPackageInput,
+//   validateAddress,
+//   validateShippingService,
+//   requestPrep,
+//   handleRequest,
+//   storeDB,
+//   responseObject,
+//   async (req, res) => {
+//     const webhookResponse = req.webhookResponse;
+//     res.status(200).json(webhookResponse);
+//   }
+// );
 
 router.post("/voidlabel", async (req, res) => {
   const { labelID } = req.body;
@@ -303,7 +343,7 @@ router.post("/void-test", async (req, res) => {
     await shipment.save();
     res.status(200).json(response.message);
   } catch (error) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ error: error.message });
   }
 });
 

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("express-jwt");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 const {
   errorHandler,
   ensureAuthenticated,
@@ -48,6 +49,16 @@ app.use(
 );
 app.use(cors(corsConfig));
 app.use(bodyParser.json());
+app.use(
+  bodyParser.json({
+    limit: "50mb",
+    verify: function (req, res, buf) {
+      if (req.url.startsWith("/webhooks")) {
+        req.rawbody = buf.toString();
+      }
+    },
+  })
+);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
@@ -61,6 +72,8 @@ const shipstationCarriers = require("./api/routes/shipstationCarriers");
 app.use(shipstationCarriers);
 const getTrackingURL = require("./api/routes/getTrackingURL");
 app.use(getTrackingURL);
+const getLabels = require("./api/routes/getLabels");
+app.use(getLabels);
 
 app.use(
   jwt({

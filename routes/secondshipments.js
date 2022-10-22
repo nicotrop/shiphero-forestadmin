@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { format, parseISO } = require("date-fns");
 const express = require("express");
 const { PermissionMiddlewareCreator } = require("forest-express-mongoose");
 require("dotenv").config();
@@ -15,14 +16,14 @@ const permissionMiddlewareCreator = new PermissionMiddlewareCreator(
 // - Native routes are already generated but can be extended/overriden - Learn how to extend a route here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/extend-a-route
 // - Smart action routes will need to be added as you create new Smart Actions - Learn how to create a Smart Action here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/actions/create-and-manage-smart-actions
 
-//Create Smart Action
+//Void Shipment
 router.post(
   "/actions/void-shipment",
   permissionMiddlewareCreator.smartAction(),
   async (req, res) => {
     let shipmentID = req.body.data.attributes.ids[0];
     let shipment = await secondshipments.findById(shipmentID);
-    console.log(shipment.label_id);
+    // console.log(shipment.label_id);
     // console.log(process.env.SHIPENGINE_API_KEY);
     let response;
     //Void Shipment
@@ -56,11 +57,81 @@ router.post(
         );
         response = data;
       }
-      shipment.label_status = "Voided";
-      await shipment.save();
-      res.send({ success: response.message });
+
+      if (response.approved == true) {
+        shipment.label_status = "Voided";
+        await shipment.save();
+        res.send({ success: response.message });
+      } else {
+        res.send({ error: "Unable to void label. Try again later" });
+      }
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  }
+);
+
+// Lookup label status
+router.post(
+  "/actions/check-label-status",
+  permissionMiddlewareCreator.smartAction(),
+  async (req, res) => {
+    let shipmentID = req.body.data.attributes.ids[0];
+    let shipment = await secondshipments.findById(shipmentID);
+
+    console.log(shipment.tracking_number);
+
+    if (shipment.apiService == "shipengine") {
+      const config = {
+        headers: {
+          Host: "api.shipengine.com",
+          "API-Key": process.env.SHIPENGINE_API_KEY,
+          "Content-Type": "application/json",
+        },
+        params: {
+          tracking_number: shipment.tracking_number,
+        },
+      };
+
+      try {
+        const { data } = await axios.get(
+          `https://api.shipengine.com/v1/labels`,
+          config
+        );
+
+        console.log(data);
+
+        const finalArr = data.labels.map((elem) => {
+          return {
+            status: elem.status,
+            created_at: format(parseISO(elem.created_at), "MM/dd/yyyy HH:mm"),
+            shipment_cost: `${elem.shipment_cost.amount} ${elem.shipment_cost.currency}`,
+            voided: elem.voided,
+            voided_at: format(parseISO(elem.voided_at), "MM/dd/yyyy HH:mm"),
+          };
+        });
+        res.send({
+          html: `
+        <strong class="c-form__label--read c-clr-1-2">Status</strong>
+        <p class="c-clr-1-4 l-mb">${finalArr[0].status}</p>
+        <strong class="c-form__label--read c-clr-1-2">Label creation date</strong>
+        <p class="c-clr-1-4 l-mb">${finalArr[0].created_at}</p>
+        <strong class="c-form__label--read c-clr-1-2">Shipment cost</strong>
+        <p class="c-clr-1-4 l-mb">${finalArr[0].shipment_cost}</p>
+        <strong class="c-form__label--read c-clr-1-2">isVoided</strong>
+        <p class="c-clr-1-4 l-mb">${finalArr[0].voided}</p>
+        <strong class="c-form__label--read c-clr-1-2">Voided date</strong>
+        <p class="c-clr-1-4 l-mb">${finalArr[0].voided_at}</p>
+        `,
+        });
+      } catch (error) {
+        res.status(400).json({
+          title: "Order search failed",
+          message: error.message,
+        });
+      }
+    } else {
+      res.status(400).send({ error: "Not implemented yet" });
     }
   }
 );
