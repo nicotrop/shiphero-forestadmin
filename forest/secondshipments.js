@@ -11,9 +11,6 @@ collection("secondshipments", {
     {
       name: "Void Shipment",
     },
-    {
-      name: "Check Label Status",
-    },
   ],
   fields: [
     {
