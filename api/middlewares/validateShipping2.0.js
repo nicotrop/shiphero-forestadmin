@@ -93,7 +93,7 @@ const validateShippingService2 = async (req, res, next) => {
       const customsArr = {
         customs: {
           contents: "merchandise",
-          nonDelivery: "treat_as_abandoned",
+          non_delivery: "treat_as_abandoned",
           customs_items: [...customsItemsArr],
         },
       };

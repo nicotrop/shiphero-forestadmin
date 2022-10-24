@@ -9,7 +9,6 @@ const requestPrep2 = async (req, res, next) => {
 
   //Use verified address from ShipEngine
   const verifiedAddress = req.verifiedAddress;
-  console.log("Verified address: ", req.verifiedAddress);
 
   //Create request body object
   let body = {};
@@ -50,7 +49,6 @@ const requestPrep2 = async (req, res, next) => {
     body.shipment.customs = req.shipengineCustoms.customs;
   }
   console.log("Request body created");
-  console.log("body: ", JSON.stringify(body));
   req.requestBody = body;
   return next();
 };
