@@ -30,7 +30,7 @@ const requestPrep2 = async (req, res, next) => {
       },
       ship_from: {
         company_name: from_address.company_name,
-        name: "ecomspaces fulifllment",
+        name: "ecomspaces fulfillment",
         phone: from_address.phone,
         address_line1: from_address.address_1,
         city_locality: from_address.city,

@@ -2,12 +2,15 @@ const axios = require("axios");
 require("dotenv").config();
 const getAuth = require("../utils/getAuth");
 const auth = getAuth();
+const sleep = require("../utils/sleep");
 
 const handleRequest = async (req, res, next) => {
   const bodyInput = req.requestBody;
   const serviceDetails = req.serviceDetails;
-
   let data;
+  sleep((200 / 60) * 1000).then(() =>
+    console.log("slept for " + ((200 / 60) * 1000) / 1000 + " seconds")
+  );
   try {
     //If carrier is UPS
     if (serviceDetails.shippingCarrier === "UPS") {

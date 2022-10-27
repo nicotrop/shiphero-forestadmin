@@ -15,6 +15,7 @@ const responseObject = require("../middlewares/responseObject");
 const validateShippingService2 = require("../middlewares/validateShipping2.0");
 const requestPrep2 = require("../middlewares/requestPrep2.0");
 const handleRequest2 = require("../middlewares/handleRequest2.0");
+const storeDB2 = require("../middlewares/storeDB2.0");
 
 router.post(
   "/webhooks/print-label/:alias",
@@ -29,7 +30,6 @@ router.post(
   async (req, res) => {
     const webhookResponse = req.webhookResponse;
     res.status(200).json(webhookResponse);
-    // res.status(200).json({ message: "Webhook received" });
   }
 );
 
@@ -40,12 +40,13 @@ router.post(
   validateAddress,
   validateShippingService2,
   requestPrep2,
-  handleRequest2,
-  storeDB,
-  responseObject,
+  // handleRequest2,
+  // storeDB2,
+  // responseObject,
   async (req, res) => {
     const webhookResponse = req.webhookResponse;
     res.status(200).json(webhookResponse);
+    // res.status(200).json(req.requestBody);
   }
 );
 

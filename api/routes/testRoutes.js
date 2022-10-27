@@ -262,24 +262,8 @@ router.post("/comparerates", async (req, res) => {
   }
 });
 
-// router.post(
-//   "/shipengineLabel/:alias",
-//   // validateWebhook,
-//   checkPackageInput,
-//   validateAddress,
-//   validateShippingService,
-//   requestPrep,
-//   handleRequest,
-//   storeDB,
-//   responseObject,
-//   async (req, res) => {
-//     const webhookResponse = req.webhookResponse;
-//     res.status(200).json(webhookResponse);
-//   }
-// );
-
 router.post("/voidlabel", async (req, res) => {
-  const { labelID } = req.body;
+  const { shipment_id } = req.body;
   const headers = {
     Host: "api.shipengine.com",
     "API-Key": process.env.SHIPENGINE_API_KEY,
@@ -287,7 +271,8 @@ router.post("/voidlabel", async (req, res) => {
   };
   try {
     const { data } = await axios.put(
-      `https://api.shipengine.com/v1/labels/${labelID}/void`,
+      `https://api.shipengine.com/v1/labels/${shipment_id}/void`,
+      {},
       {
         headers,
       }

@@ -3,7 +3,6 @@ require("dotenv").config();
 
 const validateAddress = async (req, res, next) => {
   const { to_address } = req.body;
-
   try {
     const { data } = await axios.post(
       "https://api.shipengine.com/v1/addresses/validate",
