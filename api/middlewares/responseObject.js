@@ -38,7 +38,6 @@ const responseObject = (req, res, next) => {
       shipping_carrier: serviceDetails.shippingCarrier,
       tracking_url: `http://www.dhl.com/en/express/tracking.html?AWB=${data.trackingNumber}&brand=DHL`,
     };
-    console.log("webhookResponse", webhookResponse);
   } else if (
     packageDetails.length === 1 &&
     serviceDetails.shippingCarrier === "UPS"
@@ -51,7 +50,7 @@ const responseObject = (req, res, next) => {
       label: data.label_download.pdf,
       customs_info: "",
       shipping_carrier: serviceDetails.shippingCarrier,
-      tracking_url: `https://www.ups.com/mobile/track?trackingNumber={${data.tracking_number}}`,
+      tracking_url: `https://www.ups.com/mobile/track?trackingNumber=${data.tracking_number}`,
     };
   }
   console.log("Response object created");

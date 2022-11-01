@@ -100,7 +100,7 @@ const requestPrep = async (req, res, next) => {
             }
           : null,
       advancedOptions: null,
-      testLabel: false,
+      testLabel: true,
     };
   }
   console.log("Request body created");

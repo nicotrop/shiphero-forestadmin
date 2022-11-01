@@ -76,10 +76,10 @@ const storeDB = async (req, res, next) => {
           name: `Package ${index + 1}`,
           labelPDF: elem.label_download.pdf,
           trackingNumber: elem.tracking_number,
-          trackingURL: `https://www.ups.com/mobile/track?trackingNumber={${elem.tracking_number}}`,
+          trackingURL: `https://www.ups.com/mobile/track?trackingNumber=${elem.tracking_number}`,
         };
       });
-      newShipment.tracking_url = `https://www.ups.com/mobile/track?trackingNumber={${data.tracking_number}}`;
+      newShipment.tracking_url = `https://www.ups.com/mobile/track?trackingNumber=${data.tracking_number}`;
     }
     await newShipment.save();
     console.log("Shipment saved to database");
