@@ -18,7 +18,7 @@ const responseObject = (req, res, next) => {
           label: elem.label_download.pdf,
           customs_info: "",
           shipping_carrier: serviceDetails.shippingCarrier,
-          tracking_url: `https://www.ups.com/mobile/track?trackingNumber={${elem.tracking_number}}`,
+          tracking_url: `https://www.ups.com/mobile/track?trackingNumber=${elem.tracking_number}`,
         };
       }),
     };
