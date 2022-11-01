@@ -5,6 +5,9 @@ const responseObject = (req, res, next) => {
 
   //Create response object for Shiphero
   let webhookResponse = {};
+  console.log("pacakge length ", packageDetails.length);
+  console.log("service details ", serviceDetails.shippingCarrier);
+  console.log("package details type ", typeof packageDetails);
   //Multiple packages
   if (packageDetails.length > 1) {
     webhookResponse = {
@@ -18,24 +21,40 @@ const responseObject = (req, res, next) => {
           label: elem.label_download.pdf,
           customs_info: "",
           shipping_carrier: serviceDetails.shippingCarrier,
-          tracking_url: `https://wwwapps.ups.com/WebTracking/processRequest?HTMLVersion=5.0&Requester=NES&AgreeToTermsAndConditions=yes&loc=en_US&tracknum=${elem.tracking_number}/trackdetails`,
+          tracking_url: `https://www.ups.com/mobile/track?trackingNumber={${elem.tracking_number}}`,
         };
       }),
     };
     //Single package
-  } else {
+  } else if (
+    typeof packageDetails === "object" &&
+    serviceDetails.shippingCarrier === "DHL"
+  ) {
+    console.log("entered webhook response");
     webhookResponse = {
       code: "200",
       shipping_method: serviceDetails.name,
-      tracking_number: data.tracking_number || data.trackingNumber,
-      cost: data?.shipment_cost?.amount || data?.shipmentCost,
-      label: data?.label_download?.pdf || req?.labelURL,
+      tracking_number: data.trackingNumber,
+      cost: data?.shipmentCost,
+      label: req?.labelURL,
       customs_info: "",
       shipping_carrier: serviceDetails.shippingCarrier,
-      tracking_url:
-        serviceDetails.shippingCarrier === "DHL"
-          ? `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${data.trackingNumber}`
-          : `https://wwwapps.ups.com/WebTracking/processRequest?HTMLVersion=5.0&Requester=NES&AgreeToTermsAndConditions=yes&loc=en_US&tracknum=${data.tracking_number}/trackdetails`,
+      tracking_url: `http://www.dhl.com/en/express/tracking.html?AWB=${data.trackingNumber}&brand=DHL`,
+    };
+    console.log("webhookResponse", webhookResponse);
+  } else if (
+    packageDetails.length === 1 &&
+    serviceDetails.shippingCarrier === "UPS"
+  ) {
+    webhookResponse = {
+      code: "200",
+      shipping_method: serviceDetails.name,
+      tracking_number: data.tracking_number,
+      cost: data.shipment_cost.amount,
+      label: data.label_download.pdf,
+      customs_info: "",
+      shipping_carrier: serviceDetails.shippingCarrier,
+      tracking_url: `https://www.ups.com/mobile/track?trackingNumber={${data.tracking_number}}`,
     };
   }
   console.log("Response object created");

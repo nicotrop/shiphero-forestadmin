@@ -8,12 +8,14 @@ const handleRequest = async (req, res, next) => {
   const bodyInput = req.requestBody;
   const serviceDetails = req.serviceDetails;
   let data;
-  sleep((200 / 60) * 1000).then(() =>
-    console.log("slept for " + ((200 / 60) * 1000) / 1000 + " seconds")
-  );
   try {
     //If carrier is UPS
     if (serviceDetails.shippingCarrier === "UPS") {
+      sleep((60 / 198) * 1000).then(() =>
+        console.log(
+          "Slept 💤 for " + (((60 / 198) * 1000) / 1000).toFixed(2) + " seconds"
+        )
+      );
       //Make request to ShipEngine
       const { data: shipEngineRes } = await axios.post(
         "https://api.shipengine.com/v1/labels",
@@ -29,7 +31,12 @@ const handleRequest = async (req, res, next) => {
       data = shipEngineRes;
       //If carrier is DHL
     } else if (serviceDetails.shippingCarrier === "DHL") {
-      const { data: ShipstationRes } = await axios.post(
+      sleep((60 / 38) * 1000).then(() =>
+        console.log(
+          "Slept 💤 for " + (((60 / 38) * 1000) / 1000).toFixed(2) + " seconds"
+        )
+      );
+      const { data: shipstationRes } = await axios.post(
         "https://ssapi.shipstation.com/shipments/createlabel",
         bodyInput,
         {
@@ -40,7 +47,7 @@ const handleRequest = async (req, res, next) => {
           },
         }
       );
-      data = ShipstationRes;
+      data = shipstationRes;
     }
     //Save one object for all the scenarios
     req.labelData = data;

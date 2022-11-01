@@ -6,8 +6,6 @@ const checkPackageInput = (req, res, next) => {
 
   const { packages } = req.body;
 
-  console.log("packages", packages);
-
   packages.forEach((item, index) => {
     packageKeys.forEach((key) => {
       if (

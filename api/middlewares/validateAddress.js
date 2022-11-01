@@ -1,9 +1,15 @@
 const axios = require("axios");
+const sleep = require("../utils/sleep");
 require("dotenv").config();
 
 const validateAddress = async (req, res, next) => {
   const { to_address } = req.body;
   try {
+    sleep((60 / 198) * 1000).then(() =>
+      console.log(
+        "Slept 💤 for " + (((60 / 198) * 1000) / 1000).toFixed(2) + " seconds"
+      )
+    );
     const { data } = await axios.post(
       "https://api.shipengine.com/v1/addresses/validate",
       JSON.stringify([

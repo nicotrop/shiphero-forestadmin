@@ -61,7 +61,7 @@ const requestPrep = async (req, res, next) => {
       },
       dimensions: packageDetails.dimensions,
       shipFrom: {
-        name: from_address.name,
+        name: "ecomspaces fulfillment",
         company: from_address.company_name,
         street1: from_address.address_1,
         street2: from_address.address_2,
@@ -100,7 +100,7 @@ const requestPrep = async (req, res, next) => {
             }
           : null,
       advancedOptions: null,
-      testLabel: false,
+      testLabel: true,
     };
   }
   console.log("Request body created");

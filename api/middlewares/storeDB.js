@@ -43,7 +43,6 @@ const storeDB = async (req, res, next) => {
       store_name: req.body.shop_name,
       shipping_carrier: serviceDetails.shippingCarrier,
       shipping_method: serviceDetails.name,
-      tracking_number: data?.tracking_number || data.trackingNumber,
       cost: data?.shipment_cost?.amount || data?.shipmentCost,
       to_address: `${verifiedAddress.city_locality}, ${verifiedAddress.country_code}`,
       zip: verifiedAddress.postal_code,
@@ -55,30 +54,32 @@ const storeDB = async (req, res, next) => {
       newShipment.shipment_labelURL = labelURL;
       newShipment.apiService = "shipstation";
       newShipment.label_id = data.shipmentId;
+      newShipment.tracking_number = data.trackingNumber;
       newShipment.packages = [
         {
           name: `Package 1`,
           labelPDF: labelURL,
           tracking_number: data.trackingNumber,
-          tracking_url: `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${data.trackingNumber}`,
+          tracking_url: `http://www.dhl.com/en/express/tracking.html?AWB=${data.trackingNumber}&brand=DHL`,
         },
       ];
-      newShipment.tracking_url = `https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id=${data.trackingNumber}`;
+      newShipment.tracking_url = `http://www.dhl.com/en/express/tracking.html?AWB=${data.trackingNumber}&brand=DHL`;
     } else if (serviceDetails.shippingCarrier === "UPS") {
       newShipment.shipment_type =
         data.packages.length > 1 ? "multi-packages" : "single-package";
       newShipment.apiService = "shipengine";
       newShipment.label_id = data.label_id;
+      newShipment.tracking_number = data?.tracking_number;
       newShipment.shipment_labelURL = data.label_download.pdf;
       newShipment.packages = data.packages.map((elem, index) => {
         return {
           name: `Package ${index + 1}`,
           labelPDF: elem.label_download.pdf,
           trackingNumber: elem.tracking_number,
-          trackingURL: `https://wwwapps.ups.com/WebTracking/processRequest?HTMLVersion=5.0&Requester=NES&AgreeToTermsAndConditions=yes&loc=en_US&tracknum=${elem.tracking_number}/trackdetails`,
+          trackingURL: `https://www.ups.com/mobile/track?trackingNumber={${elem.tracking_number}}`,
         };
       });
-      newShipment.tracking_url = `https://wwwapps.ups.com/WebTracking/processRequest?HTMLVersion=5.0&Requester=NES&AgreeToTermsAndConditions=yes&loc=en_US&tracknum=${data.tracking_number}/trackdetails`;
+      newShipment.tracking_url = `https://www.ups.com/mobile/track?trackingNumber={${data.tracking_number}}`;
     }
     await newShipment.save();
     console.log("Shipment saved to database");
