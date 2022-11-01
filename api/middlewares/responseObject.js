@@ -5,9 +5,6 @@ const responseObject = (req, res, next) => {
 
   //Create response object for Shiphero
   let webhookResponse = {};
-  console.log("pacakge length ", packageDetails.length);
-  console.log("service details ", serviceDetails.shippingCarrier);
-  console.log("package details type ", typeof packageDetails);
   //Multiple packages
   if (packageDetails.length > 1) {
     webhookResponse = {
