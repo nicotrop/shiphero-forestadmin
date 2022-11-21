@@ -45,6 +45,10 @@ const requestPrep = async (req, res, next) => {
         packages: packageDetails,
       },
     };
+    if (serviceDetails.code === "ups_worldwide_expedited") {
+      const { customs } = req.shipengineCustoms;
+      body.shipment.customs = customs;
+    }
   } else if (serviceDetails.shippingCarrier === "DHL") {
     //Format date for Shipstation
     const date = format(new Date(), "yyyy-MM-dd hh:mm:ss");
@@ -100,7 +104,7 @@ const requestPrep = async (req, res, next) => {
             }
           : null,
       advancedOptions: null,
-      testLabel: false,
+      testLabel: true,
     };
   }
   console.log("Request body created");

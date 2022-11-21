@@ -16,6 +16,7 @@ const handleRequest = async (req, res, next) => {
           "Slept 💤 for " + (((60 / 198) * 1000) / 1000).toFixed(2) + " seconds"
         )
       );
+
       //Make request to ShipEngine
       const { data: shipEngineRes } = await axios.post(
         "https://api.shipengine.com/v1/labels",

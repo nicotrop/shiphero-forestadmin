@@ -40,9 +40,9 @@ router.post(
 //   validateAddress,
 //   validateShippingService2,
 //   requestPrep2,
-//   // handleRequest2,
-//   // storeDB2,
-//   // responseObject,
+//   handleRequest2,
+//   storeDB2,
+//   responseObject,
 //   async (req, res) => {
 //     const webhookResponse = req.webhookResponse;
 //     res.status(200).json(webhookResponse);
