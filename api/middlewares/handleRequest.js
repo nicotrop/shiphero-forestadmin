@@ -55,9 +55,10 @@ const handleRequest = async (req, res, next) => {
     console.log("Succesful request to service provider");
     next();
   } catch (error) {
+    console.log("Error ", error);
     res.status(401).json({
       title: "Label creation failed",
-      message: error,
+      message: error.message,
     });
   }
 };

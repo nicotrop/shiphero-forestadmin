@@ -1,6 +1,16 @@
-const sleep = require("./api/utils/sleep");
+// const getHours = require("date-fns/getHours");
 
-console.log("start");
-sleep((200 / 60) * 1000).then(() =>
-  console.log("end after " + ((200 / 60) * 1000) / 1000 + " seconds")
-);
+// const result = getHours(new Date());
+
+// console.log(result);
+
+var date = new Date();
+
+function roundMinutes(date) {
+  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
+  date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+
+  return date;
+}
+// console.log(date);
+console.log(roundMinutes(date));
