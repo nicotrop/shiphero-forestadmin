@@ -99,8 +99,6 @@ router.post(
           config
         );
 
-        // console.log(data);
-
         const finalArr = data.labels.map((elem) => {
           return {
             status: elem.status,
@@ -128,6 +126,58 @@ router.post(
         res.status(400).json({
           title: "Order search failed",
           message: error.message,
+        });
+      }
+    } else {
+      res.status(400).send({ error: "Not implemented yet" });
+    }
+  }
+);
+
+router.post(
+  "/actions/file-a-claim",
+  permissionMiddlewareCreator.smartAction(),
+  async (req, res) => {
+    let shipmentID = req.body.data.attributes.ids[0];
+    let shipment = await secondshipments.findById(shipmentID);
+    if (shipment.apiService == "shipengine") {
+      try {
+        const { data } = await axios.get(
+          `https://api.shipengine.com/v1/labels?tracking_number=${shipment.tracking_number}`,
+          {
+            headers: {
+              Host: "api.shipengine.com",
+              "API-Key": process.env.SHIPENGINE_API_KEY,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const response = {
+          ...JSON.parse(JSON.stringify(data.labels[0])),
+        };
+
+        console.log("response: ", response?.insurance_claim);
+
+        res.send({
+          html: `
+          <strong class="c-form__label--read c-clr-1-2">Order number</strong>
+          <p class="c-clr-1-4 l-mb">${shipment.order_number}</p>
+          <strong class="c-form__label--read c-clr-1-2">Shipment ID</strong>
+          <p class="c-clr-1-4 l-mb">${response.shipment_id}</p>
+          <strong class="c-form__label--read c-clr-1-2">Insurance claim link</strong>
+          ${
+            response?.insurance_claim === null ||
+            response?.insurance_claim === undefined
+              ? `<p class="c-clr-1-4 l-mb">No links available</p>`
+              : `
+          <p class="c-clr-1-4 l-mb"><a href=${response?.insurance_claim?.href}>${response?.insurance_claim?.href}</a></p>`
+          }`,
+        });
+      } catch (error) {
+        console.log("error message: ", error.message);
+        res.status(400).json({
+          title: "Unable to get claim link",
+          error: error.message,
         });
       }
     } else {

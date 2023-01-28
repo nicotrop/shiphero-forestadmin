@@ -488,6 +488,19 @@
         "change": []
       }
     }, {
+      "name": "File a Claim",
+      "type": "bulk",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/file-a-claim",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": [],
+      "hooks": {
+        "load": false,
+        "change": []
+      }
+    }, {
       "name": "Void Shipment",
       "type": "bulk",
       "baseUrl": null,

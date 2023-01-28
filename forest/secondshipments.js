@@ -14,6 +14,9 @@ collection("secondshipments", {
     {
       name: "Check Label Status",
     },
+    {
+      name: "File a Claim",
+    },
   ],
   fields: [
     {

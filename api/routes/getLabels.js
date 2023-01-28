@@ -25,4 +25,26 @@ router.post("/orders", async (req, res) => {
   }
 });
 
+router.get("/label/:tracking", async (req, res) => {
+  const trackingNumber = req.params.tracking;
+  try {
+    const { data } = await axios.get(
+      `https://api.shipengine.com/v1/labels?tracking_number=${trackingNumber}`,
+      {
+        headers: {
+          Host: "api.shipengine.com",
+          "API-Key": process.env.SHIPENGINE_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    res.status(200).json({ label: data });
+  } catch (error) {
+    console.log("error message: ", error.message);
+    res.status(400).json({
+      error: error.message,
+    });
+  }
+});
+
 module.exports = router;
